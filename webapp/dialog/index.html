@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .dialog-box {
+            position: fixed;
+            width: 60%;
+            top: 40%;
+            left: 0;
+            right: 0;
+            margin: auto;
+            text-align: center;
+            background: #fff;
+            z-index: 1002;
+        }
+
+        .dialog-header {
+            padding: 15px 15px 0 15px;
+            font-weight: 700;
+        }
+
+        .dialog-body {
+            padding: 10px 20px 15px;
+            border-bottom: 1px solid #ddd;
+            min-height: 36px;
+        }
+
+        .dialog-footer {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .btn-dialog {
+            line-height: 35px;
+            display: block;
+            background-color: #fff;
+            -webkit-box-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            margin: 0;
+            border: 0;
+            outline: none;
+
+        }
+
+        .btn-cancel {
+            border-right: 1px solid #ddd;
+        }
+
+        .dialog-mask {
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        function Dialog() {
+            this.init.apply(this, arguments)
+        }
+        Dialog.prototype = {
+            constructor: Dialog,
+            init(config) {
+                this.config = {
+                    title: isUndefined(config.title) ? '提示' : String(config.title),
+                    message: isUndefined(config.message) ? '' : String(config.message),
+                    showConfirmButton: isUndefined(config.showConfirmButton) ? true : !!showCancelButton,
+                    showCancelButton: isUndefined(config.showCancelButton) ? true : !!showCancelButton,
+                    confirmButtonText: isUndefined(config.cancelButtonText) ? '确定' : String(confirmButtonText),
+                    confirmButtonClass: isUndefined(config.confirmButtonClass) ? '' : String(config.confirmButtonClass),
+                    cancelButtonText: isUndefined(config.cancelButtonText) ? '取消' : String(config.cancelButtonText),
+                    cancelButtonClass: isUndefined(config.cancelButtonClass) ? '' : String(config.cancelButtonClass),
+                    maskClosable: isUndefined(config.maskClosable) ? true : !!maskClosable,
+                    onCancel: typeof config.onCancel === 'function' ? config.onCancel.bind(this) : null,
+                    onConfirm: typeof config.onConfirm === 'function' ? config.onConfirm.bind(this) : null
+                }
+                function isUndefined(v) {
+                    return typeof v === 'undefined';
+                }
+                this.ele = document.createElement('div')
+                this.ele.className = 'dialog-box'
+                this.mask = document.createElement('div')
+                this.mask.className = 'dialog-mask'
+                this.ele.innerHTML = `<div class="dialog-header">
+                                    ${this.config.title}
+                                </div>
+                                <div class="dialog-body">
+                                    ${this.config.message}    
+                                </div>
+                                
+                                <div class="dialog-footer">
+                                    ${this.config.showCancelButton ? `<button class="btn-dialog btn-cancel ${this.config.cancelButtonClass}" type="button">${this.config.cancelButtonText}</button>` : ``}
+                                    ${this.config.showConfirmButton ? `<button class="btn-dialog btn-confirm ${this.config.confirmButtonClass}" type="button">${this.config.confirmButtonText}</button>` : ``}
+                                </div>`
+                this.render()
+                this.events()
+            },
+            render() {
+                document.body.appendChild(this.ele)
+                document.body.appendChild(this.mask)
+            },
+            events() {
+                var self = this
+                document.querySelector('.btn-cancel').onclick = function () {
+                    // self.config.onCancel && self.config.onCancel() 
+                    if (self.config.onCancel) {
+                        self.config.onCancel()
+                        return
+                    }
+                    self.close()
+                }
+                document.querySelector('.btn-confirm').onclick = function () {
+                    // self.config.onConfirm && self.config.onConfirm()
+                    if (self.config.onConfirm) {
+                        self.config.onConfirm()
+                        return
+                    }
+                    self.close()
+                }
+                document.querySelector('.dialog-mask').onclick = function () {
+                    if (self.config.maskClosable) {
+                        self.close()
+                    }
+                }
+            },
+            close() {
+                this.ele.remove()
+                this.mask.remove()
+            }
+        }
+        new Dialog({
+            title: '提示',
+            message: '<p>确定删除？</p>',
+            onConfirm: function () {
+                console.log(this);
+                this.close()
+            },
+        })
+    //   参数	说明	类型	默认值
+    // title	提示框的标题	String		
+    // message	提示框的内容	String		
+    // showConfirmButton	是否显示确认按钮	Boolean		true
+    // showCancelButton	是否显示取消按钮	Boolean		false
+    // confirmButtonText	确认按钮的文本	String		
+    // confirmButtonClass	确认按钮的类名	String		
+    // cancelButtonText	取消按钮的文本	String		
+    // cancelButtonClass	取消按钮的类名	String	
+    // closable 点击遮罩是否可关闭  true
+    // onCancel 点击取消按钮的回调    
+    // onConfirm 点击确定按钮的回调
+    //实例api
+    // close()
+    </script>
+</body>
+
+</html>
