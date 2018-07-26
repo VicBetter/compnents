@@ -1,6 +1,10 @@
 
 function Toast() {
-    this.init.apply(this, arguments)
+    if(this instanceof Toast) {
+        this.init.apply(this, arguments)
+    } else {
+        return new Toast(...arguments)
+    }
 }
 Toast.prototype = {
     init: function (msg, timeout, callback) {
