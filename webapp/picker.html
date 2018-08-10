@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        ul {
+            /* transition: all 0.1s ease; */
+            transition-duration: .3s;
+            transition-timing-function: ease-out;
+            position: relative;
+            z-index: 1;
+            /* overflow: hidden; */
+            height: 150px;
+        }
+
+        li {
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .box {
+            /* width: 200px; */
+            /* height: 270px; */
+            overflow: hidden;
+            border: 1px solid palegreen;
+            margin: auto;
+            position: relative;
+        }
+
+        .line {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            height: 30px;
+            margin-top: -15px;
+        }
+
+        .line::after {
+            display: block;
+            content: '';
+            width: 100%;
+            height: 1px;
+            background-color: #ddd;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            position: absolute;
+        }
+
+        .line::before {
+            display: block;
+            content: '';
+            width: 100%;
+            height: 1px;
+            background-color: #ddd;
+            bottom: 0;
+            left: 0;
+            top: auto;
+            position: absolute;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box" id="box">
+        <div class="line"></div>
+    </div>
+    <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
+    <script>
+        const DATA = [
+            {
+                value: '1',
+                label: 'item'
+            },
+            {
+                value: '1',
+                label: 'item'
+            },
+            {
+                value: '1',
+                label: 'item'
+            }, {
+                value: '1',
+                label: 'item'
+            },
+            {
+                value: '1',
+                label: 'item'
+            },
+            {
+                value: '1',
+                label: 'item'
+            }, {
+                value: '1',
+                label: 'item'
+            },
+            {
+                value: '1',
+                label: 'item'
+            },
+            {
+                value: '1',
+                label: 'item'
+            },
+            {
+                value: '1',
+                label: 'item'
+            }
+        ]
+
+
+        function Piker(config) {
+            this.init(config)
+        }
+        Piker.prototype = {
+            init(config) {
+                this.el = config.el
+                this.data = config.data
+                this.itemHeight = 30
+                this.touschStartY = null
+                this.scrollY = null
+                this.transformY = null
+                this.maxUp = this.itemHeight * 2
+                this.maxDown = this.itemHeight * this.data.length - 80
+                this.render()
+                this.events()
+            },
+            render() {
+                this.scrollEl = document.createElement('ul')
+                this.scrollEl.style.transform = 'translateY(0)'
+                let html = ''
+                this.data.forEach(item => {
+                    html += `<li style="height:${this.itemHeight}px">${item.label}</li>`
+                })
+                this.scrollEl.innerHTML = html
+                this.el.appendChild(this.scrollEl)
+            },
+            events() {
+                const _this = this
+                _this.scrollEl.ontouchstart = function (e) {
+                    _this.touchStartY = e.touches[0].clientY
+                    _this.transformY = parseFloat(this.style.transform.substr(11))
+                }
+
+                _this.scrollEl.ontouchmove = function (e) {
+                    _this.scrollY = e.touches[0].clientY - _this.touchStartY + _this.transformY
+                    this.style.transform = `translateY(${_this.scrollY}px)`
+                }
+                _this.scrollEl.ontouchend = function (e) {
+                    _this.scrollY = _this.scrollY > _this.maxUp ? _this.maxUp : _this.scrollY < -_this.maxDown ? -_this.maxDown : _this.scrollY
+
+                    this.style.transform = `translateY(  ${Math.round(_this.scrollY / 30) * 30}px)`
+                }
+            }
+        }
+
+        new Piker({
+            el: document.getElementById('box'),
+            data: DATA
+        })
+    </script>
+</body>
+
+</html>
